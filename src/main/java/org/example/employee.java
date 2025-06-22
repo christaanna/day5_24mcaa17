@@ -55,7 +55,7 @@ public class employee {
                         System.out.println("Enter Joining Date : ");
                         String jod = sc.nextLine();
 
-                        Document doc = new Document("name", name).append("email", email).append("skills", skill).append("department", department).append("jod", jod);
+                        Document doc = new Document("name", name).append("email", email).append("skills", skill).append("department", department).append("joiningDate", jod);
                         stud.add(doc);
                     }
                     collection.insertMany(stud);
