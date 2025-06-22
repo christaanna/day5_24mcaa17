@@ -106,18 +106,70 @@ public class employee {
 
                     break;
 
-                case 4 :
-                    System.out.println("Enter field to search by (name/email/department/skills): ");
-                    String searchField = sc.nextLine();
+                case 4:
+    System.out.println("Search by field (name/email/department/skills/joiningDate): ");
+    String searchField = sc.nextLine();
 
-                    System.out.println("Enter value to search: ");
-                    String searchValue = sc.nextLine();
+    Bson filter = null;
 
-                    FindIterable<Document> results = collection.find(eq(searchField, searchValue));
-                    for (Document doc : results) {
-                        System.out.println(doc.toJson());
-                    }
-                    break;
+    switch (searchField.toLowerCase()) {
+        case "name":
+            System.out.println("Enter partial or full name to search: ");
+            String nameInput = sc.nextLine();
+            filter = Filters.regex("name", Pattern.compile(nameInput, Pattern.CASE_INSENSITIVE));
+            break;
+
+        case "email":
+            System.out.println("Enter email to search: ");
+            String emailInput = sc.nextLine();
+            filter = Filters.eq("email", emailInput);
+            break;
+
+        case "department":
+            System.out.println("Enter department to search: ");
+            String deptInput = sc.nextLine();
+            filter = Filters.eq("department", deptInput);
+            break;
+
+        case "skills":
+            System.out.println("Enter skill to search for: ");
+            String skillInput = sc.nextLine();
+            filter = Filters.elemMatch("skills", Filters.eq("$eq", skillInput));
+            break;
+
+        case "joiningdate":
+            System.out.println("Enter start date (yyyy-MM-dd): ");
+            String start = sc.nextLine();
+            System.out.println("Enter end date (yyyy-MM-dd): ");
+            String end = sc.nextLine();
+
+            // Convert to Date objects
+            try {
+                Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+                Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+                filter = Filters.and(
+                        Filters.gte("joiningDate", startDate),
+                        Filters.lte("joiningDate", endDate)
+                );
+            } catch (ParseException e) {
+                System.out.println("Invalid date format.");
+                break;
+            }
+            break;
+
+        default:
+            System.out.println("Invalid field entered.");
+            break;
+    }
+
+    if (filter != null) {
+        FindIterable<Document> results = collection.find(filter);
+        for (Document doc : results) {
+            System.out.println(doc.toJson());
+        }
+    }
+    break;
+
 
                 case 5 :
                     int page = 1;
